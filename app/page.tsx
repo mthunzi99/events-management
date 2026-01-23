@@ -1,5 +1,12 @@
-import { ComponentExample } from "@/components/component-example";
+import { getData } from "./table";
+import { ClientDashboard } from "./client-dashboard";
 
-export default function Page() {
-return <ComponentExample />;
+export default async function Page() {
+  const data = await getData();
+
+  return (
+    <div className="">
+      <ClientDashboard data={data} />
+    </div>
+  );
 }
