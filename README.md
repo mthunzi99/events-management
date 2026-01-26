@@ -1,3 +1,11 @@
+## Project Overview
+
+This project is an event management system built to simplify attendee registration, check-in, and on-site operations using thermal printers and QR code technology. The system allows event organizers to generate and print name tags and meal coupons instantly, reducing manual work and improving efficiency during events.
+
+Each printed badge contains a unique QR code that can be scanned to quickly access an attendee’s profile, including personal details, attendance status, and participation records. This enables fast verification, secure access, and real-time tracking throughout the event.
+
+By integrating database management, thermal printing, and QR code scanning into a single platform, the system provides a reliable and user-friendly solution for managing large and small events with minimal delays.
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
