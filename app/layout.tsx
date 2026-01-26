@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Inter } from "next/font/google";
 import "./globals.css";
-import { cookies } from "next/dist/server/request/cookies";
+import { cookies } from "next/headers";
 import { ThemeProvider } from "next-themes";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import AppSideBar from "@/components/AppSideBar";
 import NavBar from "@/components/NavBar";
+import { AuthProvider } from "@/components/context/AuthProvider";
+import Providers from "./Providers";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -36,22 +38,15 @@ export default async function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased flex`}
       >
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <SidebarProvider defaultOpen={defaultOpen}>
-            <AppSideBar />
-            <div className="flex-1">
-              <main className="w-full">
-                <NavBar />
-                <div className="px-4">{children}</div>
-              </main>
-            </div>
-          </SidebarProvider>
-        </ThemeProvider>
+        <Providers defaultOpen={defaultOpen}>
+          <AppSideBar />
+          <div className="flex-1">
+            <main className="w-full">
+              <NavBar />
+              <div className="px-4">{children}</div>
+            </main>
+          </div>
+        </Providers>
       </body>
     </html>
   );
