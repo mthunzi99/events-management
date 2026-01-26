@@ -27,12 +27,10 @@ const AppSideBar = () => {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton asChild>
-              <div>
-                <Link href="/">
-                  <TicketIcon />
-                </Link>
+              <Link href="/">
+                <TicketIcon />
                 <span>Event Manager</span>
-              </div>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
