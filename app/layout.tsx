@@ -8,6 +8,7 @@ import AppSideBar from "@/components/AppSideBar";
 import NavBar from "@/components/NavBar";
 import { AuthProvider } from "@/components/context/AuthProvider";
 import Providers from "./Providers";
+import { Toaster } from "sonner";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -43,6 +44,7 @@ export default async function RootLayout({
           <div className="flex-1">
             <main className="w-full">
               <NavBar />
+              <Toaster position="top-right" />
               <div className="px-4">{children}</div>
             </main>
           </div>

@@ -1,12 +1,32 @@
-import { getData } from "./table";
-import { ClientDashboard } from "./client-dashboard";
+"use client";
 
-export default async function Page() {
-  const data = await getData();
+import { useEffect } from "react";
+import useAuth from "@/hooks/useAuth";
+import { useRouter } from "next/navigation";
 
-  return (
-    <div className="">
-      <ClientDashboard data={data} />
-    </div>
-  );
+import Auth from "@/components/auth/Auth";
+
+export default function Page() {
+  const { user, loading } = useAuth();
+  const router = useRouter();
+
+  // Redirect AFTER render
+  useEffect(() => {
+    if (!loading && user) {
+      router.push("/list");
+    }
+  }, [loading, user, router]);
+
+  // Still loading auth
+  if (loading) {
+    return <h1>Loading...</h1>;
+  }
+
+  // Not logged in → show auth
+  if (!user) {
+    return <Auth />;
+  }
+
+  // While redirecting
+  return null;
 }
