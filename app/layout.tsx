@@ -44,7 +44,16 @@ export default async function RootLayout({
           <div className="flex-1">
             <main className="w-full">
               <NavBar />
-              <Toaster position="top-right" />
+              <Toaster
+                position="bottom-right"
+                toastOptions={{
+                  classNames: {
+                    toast:
+                      "mt-2 w-[320px] overflow-x-auto bg-background text-foreground p-4 ",
+                    description: "text-muted-foreground",
+                  },
+                }}
+              />
               <div className="px-4">{children}</div>
             </main>
           </div>
