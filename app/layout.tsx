@@ -2,11 +2,8 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Inter } from "next/font/google";
 import "./globals.css";
 import { cookies } from "next/headers";
-import { ThemeProvider } from "next-themes";
-import { SidebarProvider } from "@/components/ui/sidebar";
 import AppSideBar from "@/components/AppSideBar";
 import NavBar from "@/components/NavBar";
-import { AuthProvider } from "@/components/context/AuthProvider";
 import Providers from "./Providers";
 import { Toaster } from "sonner";
 
@@ -44,16 +41,7 @@ export default async function RootLayout({
           <div className="flex-1">
             <main className="w-full">
               <NavBar />
-              <Toaster
-                position="bottom-right"
-                toastOptions={{
-                  classNames: {
-                    toast:
-                      "mt-2 w-[320px] overflow-x-auto bg-background text-foreground p-4 ",
-                    description: "text-muted-foreground",
-                  },
-                }}
-              />
+              <Toaster position="bottom-right" />
               <div className="px-4">{children}</div>
             </main>
           </div>

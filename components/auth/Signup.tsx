@@ -14,6 +14,7 @@ import { toast } from "sonner";
 import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
+import client from "@/api/client";
 
 const signUpSchema = z
   .object({
@@ -51,8 +52,17 @@ export function Signup() {
     },
   });
 
-  function onSubmit(data: z.infer<typeof signUpSchema>) {
-    toast("You submitted the following values:", {
+  async function onSubmit(data: z.infer<typeof signUpSchema>) {
+    const { data: signUpData, error } = await client.auth.signUp({
+      email: data.email,
+      password: data.password,
+    });
+    if (error) {
+      toast.error("Failed to sign up: " + error.message);
+      return;
+    }
+
+    toast.success("You submitted the following values:", {
       description: (
         <pre className="bg-code text-code-foreground mt-2 w-[320px] overflow-x-auto rounded-md p-4">
           <code>{JSON.stringify(data, null, 2)}</code>
