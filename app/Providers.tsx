@@ -2,7 +2,6 @@
 
 import { ThemeProvider } from "next-themes";
 import { SidebarProvider } from "@/components/ui/sidebar";
-import { AuthProvider } from "@/components/context/AuthProvider";
 import { useAuth } from "@/hooks/useAuth";
 import { Toaster } from "sonner";
 import NavBar from "@/components/NavBar";

@@ -1,7 +1,7 @@
 "use client";
 import { ChartPieDonutText } from "@/components/PieChart";
-import { People, peopleColumns } from "./columns";
-import { DataTable } from "../components/ui/data-table";
+import { People, peopleColumns } from "@/app/columns";
+import { DataTable } from "@/components/ui/data-table";
 
 export function ClientDashboard({ data }: { data: People[] }) {
   return (

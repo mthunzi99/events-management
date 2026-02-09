@@ -1,4 +1,4 @@
-import { ClientDashboard } from "@/app/client-dashboard";
+import { ClientDashboard } from "@/app/(main)/dashboard/client-dashboard";
 import { getData } from "@/app/table";
 
 export const Dashboard = async () => {
