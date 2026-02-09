@@ -118,7 +118,12 @@ export function Login() {
         </form>
       </CardContent>
       <CardFooter>
-        <Button type="submit" form="form-rhf-login" className="w-full">
+        <Button
+          variant={"default"}
+          type="submit"
+          form="form-rhf-login"
+          className="w-full"
+        >
           Login
         </Button>
       </CardFooter>
