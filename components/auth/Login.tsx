@@ -14,6 +14,7 @@ import { toast } from "sonner";
 import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
+import client from "@/api/client";
 
 const loginSchema = z.object({
   email: z.email(),
@@ -44,16 +45,22 @@ export function Login() {
     },
   });
 
-  function onSubmit(data: z.infer<typeof loginSchema>) {
-    toast("You submitted the following values:", {
+  async function onSubmit(data: z.infer<typeof loginSchema>) {
+    const { data: loginData, error } = await client.auth.signInWithPassword({
+      email: data.email,
+      password: data.password,
+    });
+
+    if (error) {
+      toast.error(`Login failed: ${error.message}`);
+      return;
+    }
+    toast.success("You submitted the following values:", {
       description: (
         <pre>
           <code>{JSON.stringify(data, null, 2)}</code>
         </pre>
       ),
-      classNames: {
-        content: "flex flex-col gap-2",
-      },
     });
   }
 
@@ -111,11 +118,9 @@ export function Login() {
         </form>
       </CardContent>
       <CardFooter>
-        <Field orientation="horizontal">
-          <Button type="submit" form="form-rhf-login" className="w-full">
-            Login
-          </Button>
-        </Field>
+        <Button type="submit" form="form-rhf-login" className="w-full">
+          Login
+        </Button>
       </CardFooter>
     </Card>
   );

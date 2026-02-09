@@ -1,4 +1,11 @@
-import { Calendar, LayoutDashboard, TicketIcon, Users } from "lucide-react";
+import {
+  Calendar,
+  LayoutDashboard,
+  LogOut,
+  TicketIcon,
+  User,
+  Users,
+} from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -12,7 +19,6 @@ import {
   SidebarSeparator,
 } from "./ui/sidebar";
 import Link from "next/dist/client/link";
-import Image from "next/image";
 
 const items = [
   { title: "Dashboard", icon: LayoutDashboard, url: "/" },

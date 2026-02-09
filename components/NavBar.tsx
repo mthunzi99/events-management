@@ -10,7 +10,8 @@ import {
 import { Button } from "./ui/button";
 import { useTheme } from "next-themes";
 import { SidebarTrigger } from "./ui/sidebar";
-import { Moon, Sun } from "lucide-react";
+import { LogOut, Moon, Sun } from "lucide-react";
+import client from "@/api/client";
 
 const NavBar = () => {
   const { theme, setTheme } = useTheme();
@@ -19,8 +20,13 @@ const NavBar = () => {
     <nav className="p-4 flex items-center justify-between bg-background z-10">
       <SidebarTrigger />
       <div className="flex items-center gap-4">
-        <Button variant="ghost" asChild>
-          <Link href="/">Dashboard</Link>
+        <Button
+          variant="ghost"
+          onClick={() => {
+            client.auth.signOut();
+          }}
+        >
+          <LogOut className="h-[1.2rem] w-[1.2rem]" />
         </Button>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

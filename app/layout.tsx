@@ -2,10 +2,14 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Inter } from "next/font/google";
 import "./globals.css";
 import { cookies } from "next/headers";
-import AppSideBar from "@/components/AppSideBar";
 import NavBar from "@/components/NavBar";
-import Providers from "./Providers";
 import { Toaster } from "sonner";
+import { AuthProvider } from "@/components/context/AuthProvider";
+import { ThemeProvider } from "next-themes";
+import { SidebarProvider } from "@/components/ui/sidebar";
+import AppSideBar from "@/components/AppSideBar";
+import { useAuth } from "@/hooks/useAuth";
+import Providers from "./Providers";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -26,26 +30,36 @@ export const metadata: Metadata = {
 
 export default async function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   const cookieStore = await cookies();
   const defaultOpen = cookieStore.get("sidebar_state")?.value === "true";
+
   return (
     <html lang="en" className={inter.variable} suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased flex`}
       >
-        <Providers defaultOpen={defaultOpen}>
-          <AppSideBar />
-          <div className="flex-1">
-            <main className="w-full">
-              <NavBar />
-              <Toaster position="bottom-right" />
-              <div className="px-4">{children}</div>
-            </main>
-          </div>
-        </Providers>
+        <AuthProvider>
+          <Providers defaultOpen={defaultOpen}>{children}</Providers>
+        </AuthProvider>
+        {/* <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <SidebarProvider defaultOpen={defaultOpen}>
+              <div className="flex-1">
+                <main className="w-full">
+                  <NavBar />
+                  <Toaster position="bottom-right" />
+                  <div className="px-4">{children}</div>
+                </main>
+              </div>
+            </SidebarProvider>
+          </ThemeProvider> */}
       </body>
     </html>
   );

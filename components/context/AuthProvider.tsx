@@ -3,14 +3,14 @@
 import { createContext, useState, useEffect } from "react";
 import client from "@/api/client";
 
-export const AuthContext = createContext<any>(null);
+const AuthContext = createContext<any>(null);
 
-export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const session = client.auth.getSession().then(({ data: { session } }) => {
+    client.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
       setLoading(false);
     });
@@ -32,3 +32,5 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     </AuthContext.Provider>
   );
 };
+
+export { AuthProvider, AuthContext };

@@ -13,7 +13,7 @@ export default function Page() {
   // Redirect AFTER render
   useEffect(() => {
     if (!loading && user) {
-      router.push("/list");
+      router.push("/dashboard");
     }
   }, [loading, user, router]);
 
