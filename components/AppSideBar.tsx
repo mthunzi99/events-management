@@ -1,15 +1,15 @@
 import {
   Calendar,
   LayoutDashboard,
-  LogOut,
+  Plus,
   TicketIcon,
-  User,
   Users,
 } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
   SidebarGroup,
+  SidebarGroupAction,
   SidebarGroupContent,
   SidebarGroupLabel,
   SidebarHeader,
@@ -19,6 +19,7 @@ import {
   SidebarSeparator,
 } from "./ui/sidebar";
 import Link from "next/dist/client/link";
+import AddEvent from "./AddEvent";
 
 const items = [
   { title: "Dashboard", icon: LayoutDashboard, url: "/" },
@@ -58,6 +59,15 @@ const AppSideBar = () => {
                 </SidebarMenuItem>
               ))}
             </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+        <SidebarSeparator />
+        <SidebarGroup>
+          <SidebarGroupLabel>Events</SidebarGroupLabel>
+          <AddEvent />
+          <SidebarGroupContent></SidebarGroupContent>
+          <SidebarGroupContent>
+            <SidebarMenu></SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
