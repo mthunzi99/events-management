@@ -80,7 +80,7 @@ export function Signup() {
       <CardContent>
         <form
           className="space-y-4"
-          id="form-rhf-signup"
+          id="form-signup"
           onSubmit={form.handleSubmit(onSubmit)}
         >
           <FieldGroup>

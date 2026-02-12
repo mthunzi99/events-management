@@ -8,7 +8,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Field, FieldGroup } from "@/components/ui/field";
+import { Field, FieldGroup, FieldError } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "./ui/button";
@@ -18,19 +18,14 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 import z from "zod";
 import { DatePickerWithRange } from "./DatePickerWithRange";
+import { toast } from "sonner";
+import client from "@/api/client";
 
 const eventSchema = z.object({
   event: z.string().min(1, { message: "Event title is required." }),
   venue: z.string().min(1, { message: "Venue is required." }),
-  dateRange: z
-    .object({
-      from: z.date(),
-      to: z.date(),
-    })
-    .refine((data) => data.from && data.to, {
-      message: "A date range is required.",
-      path: ["dateRange"],
-    }),
+  from_date: z.date({ message: "Start date is required." }),
+  to_date: z.date({ message: "End date is required." }),
 });
 
 const AddEvent = () => {
@@ -39,12 +34,35 @@ const AddEvent = () => {
     defaultValues: {
       event: "",
       venue: "",
-      dateRange: {
-        from: new Date(),
-        to: new Date(),
-      },
+      from_date: new Date(),
+      to_date: new Date(),
     },
   });
+
+  async function onSubmit(data: z.infer<typeof eventSchema>) {
+    const { event, venue, from_date, to_date } = data;
+
+    const { error } = await client
+      .from("Events")
+      .insert({
+        event,
+        venue,
+        from_date: from_date.toLocaleDateString("en-CA"),
+        to_date: to_date.toLocaleDateString("en-CA"),
+      })
+      .single();
+
+    if (error) {
+      toast.error("Failed to create event", {
+        description: error.message,
+      });
+      return;
+    }
+
+    toast.success("Event created successfully!");
+
+    form.reset();
+  }
 
   return (
     <Dialog>
@@ -61,13 +79,13 @@ const AddEvent = () => {
             tracked within the system.
           </DialogDescription>
         </DialogHeader>
-        <form>
+        <form id="form-add-event" onSubmit={form.handleSubmit(onSubmit)}>
           <FieldGroup>
             <Controller
               name="event"
               control={form.control}
               render={({ field, fieldState }) => (
-                <Field>
+                <Field data-invalid={fieldState.invalid}>
                   <Label htmlFor="event-1">Event Title</Label>
                   <Input
                     id="event-1"
@@ -75,9 +93,7 @@ const AddEvent = () => {
                     placeholder="Enter event title"
                   />
                   {fieldState.error && (
-                    <p className="text-sm text-red-500">
-                      {fieldState.error.message}
-                    </p>
+                    <FieldError errors={[fieldState.error]} />
                   )}
                 </Field>
               )}
@@ -86,7 +102,7 @@ const AddEvent = () => {
               name="venue"
               control={form.control}
               render={({ field, fieldState }) => (
-                <Field>
+                <Field data-invalid={fieldState.invalid}>
                   <Label htmlFor="venue-1">Venue</Label>
                   <Input
                     id="venue-1"
@@ -94,36 +110,46 @@ const AddEvent = () => {
                     placeholder="Enter venue name"
                   />
                   {fieldState.error && (
-                    <p className="text-sm text-red-500">
-                      {fieldState.error.message}
-                    </p>
+                    <FieldError errors={[fieldState.error]} />
                   )}
                 </Field>
               )}
             />
             <Controller
-              name="dateRange"
+              name="from_date"
               control={form.control}
               render={({ field, fieldState }) => (
-                <Field>
+                <Field data-invalid={fieldState.invalid}>
                   <Label htmlFor="date-1">Dates</Label>
-                  <DatePickerWithRange />
+                  <DatePickerWithRange
+                    value={{
+                      from: form.watch("from_date"),
+                      to: form.watch("to_date"),
+                    }}
+                    onChange={(range) => {
+                      if (!range) return;
+
+                      form.setValue("from_date", range.from ?? new Date());
+                      form.setValue(
+                        "to_date",
+                        range.to ?? range.from ?? new Date(),
+                      );
+                    }}
+                  />
                   {fieldState.error && (
-                    <p className="text-sm text-red-500">
-                      {fieldState.error.message}
-                    </p>
+                    <FieldError errors={[fieldState.error]} />
                   )}
                 </Field>
               )}
             />
           </FieldGroup>
+          <DialogFooter className="mt-4">
+            <DialogClose asChild>
+              <Button variant="outline">Cancel</Button>
+            </DialogClose>
+            <Button type="submit">Create +</Button>
+          </DialogFooter>
         </form>
-        <DialogFooter>
-          <DialogClose asChild>
-            <Button variant="outline">Cancel</Button>
-          </DialogClose>
-          <Button type="submit">Save changes</Button>
-        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
