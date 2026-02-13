@@ -1,15 +1,10 @@
-import {
-  Calendar,
-  LayoutDashboard,
-  Plus,
-  TicketIcon,
-  Users,
-} from "lucide-react";
+"use client";
+
+import { Calendar, LayoutDashboard, TicketIcon, Users } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
   SidebarGroup,
-  SidebarGroupAction,
   SidebarGroupContent,
   SidebarGroupLabel,
   SidebarHeader,
@@ -20,6 +15,7 @@ import {
 } from "./ui/sidebar";
 import Link from "next/dist/client/link";
 import AddEvent from "./AddEvent";
+import EventsMenu from "./EventsMenu";
 
 const items = [
   { title: "Dashboard", icon: LayoutDashboard, url: "/" },
@@ -65,7 +61,9 @@ const AppSideBar = () => {
         <SidebarGroup>
           <SidebarGroupLabel>Events</SidebarGroupLabel>
           <AddEvent />
-          <SidebarGroupContent></SidebarGroupContent>
+          <SidebarGroupContent>
+            <EventsMenu />
+          </SidebarGroupContent>
           <SidebarGroupContent>
             <SidebarMenu></SidebarMenu>
           </SidebarGroupContent>
