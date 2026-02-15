@@ -24,6 +24,8 @@ import {
 
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
+import { Button } from "./button";
+import AddPerson from "../AddPerson";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -73,7 +75,7 @@ export function DataTable<TData, TValue>({
 
   return (
     <div className="overflow-hidden rounded-md border">
-      <div className="flex items-center p-4">
+      <div className="flex items-center p-4 justify-between">
         <Input
           placeholder="Search..."
           value={(table.getState().globalFilter as string) ?? ""}
@@ -82,6 +84,8 @@ export function DataTable<TData, TValue>({
           }
           className="max-w-sm"
         />
+
+        <AddPerson />
       </div>
       <Table>
         <TableHeader>
@@ -94,7 +98,7 @@ export function DataTable<TData, TValue>({
                       ? null
                       : flexRender(
                           header.column.columnDef.header,
-                          header.getContext()
+                          header.getContext(),
                         )}
                   </TableHead>
                 );

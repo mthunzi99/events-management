@@ -19,6 +19,7 @@ import {
   AlertDialogTrigger,
 } from "./ui/alert-dialog";
 import { toast } from "sonner";
+import { useEvent } from "./context/EventProvider";
 
 export function EventsMenu() {
   interface Event {
@@ -56,17 +57,28 @@ export function EventsMenu() {
     fetchEvents(); // Refresh the events list after deletion
   };
 
+  const { setActiveEvent } = useEvent();
+
+  const isActive = (eventName: string) => {
+    const activeEvent = localStorage.getItem("activeEvent");
+    if (activeEvent && JSON.parse(activeEvent).name === eventName) {
+      return true;
+    }
+    return false;
+  };
+
   useEffect(() => {
     fetchEvents();
   }, []);
-
-  console.log("Fetched Events:", events);
 
   return (
     <SidebarMenu>
       {events.map((event) => (
         <SidebarMenuItem key={event.event}>
-          <SidebarMenuButton>
+          <SidebarMenuButton
+            isActive={isActive(event.event)}
+            onClick={() => setActiveEvent({ name: event.event })}
+          >
             <Calendar className="h-4 w-4" />
             <span>{event.event}</span>
           </SidebarMenuButton>
