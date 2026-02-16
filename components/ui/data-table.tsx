@@ -12,7 +12,6 @@ import {
   getSortedRowModel,
   FilterFn,
 } from "@tanstack/react-table";
-
 import {
   Table,
   TableBody,
@@ -21,10 +20,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
-import { Button } from "./button";
 import AddPerson from "../AddPerson";
 
 interface DataTableProps<TData, TValue> {
@@ -58,7 +55,7 @@ export function DataTable<TData, TValue>({
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    globalFilterFn: "includesString", // built-in filter function
+    globalFilterFn: "includesString",
     onSortingChange: setSorting,
     onRowSelectionChange: setRowSelection,
     onGlobalFilterChange: setGlobalFilter,

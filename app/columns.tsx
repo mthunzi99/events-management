@@ -16,7 +16,7 @@ import { ArrowUpDown, Ellipsis } from "lucide-react";
 export type People = {
   id: string;
   name: string;
-  organization: string;
+  organisation: string;
   role: string;
   payment: "Paid" | "Unpaid" | "Pending";
   check_in: Date;
@@ -61,7 +61,7 @@ export const peopleColumns: ColumnDef<People>[] = [
     },
   },
   {
-    accessorKey: "organization",
+    accessorKey: "organisation",
     header: ({ column }) => {
       return (
         <Button
@@ -110,7 +110,16 @@ export const peopleColumns: ColumnDef<People>[] = [
   {
     accessorKey: "check_in",
     header: "Check-In",
-    cell: (info) => (info.getValue() as Date).toLocaleString(),
+    cell: ({ row }) => {
+      const value = row.getValue("check_in") as Date;
+      return value ? (
+        new Date(value).toLocaleString()
+      ) : (
+        <p className="bg-red-500/50 px-2 py-1 rounded-full text-xs w-max font-medium">
+          Not Checked in
+        </p>
+      );
+    },
   },
   {
     accessorKey: "last_printed",

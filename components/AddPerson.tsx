@@ -1,6 +1,8 @@
 import {
   Dialog,
+  DialogClose,
   DialogContent,
+  DialogFooter,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
@@ -20,6 +22,9 @@ import { Label } from "@/components/ui/label";
 import { Controller, useForm } from "react-hook-form";
 import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { toast } from "sonner";
+import client from "@/api/client";
+import { useEvent } from "./context/EventProvider";
 
 const attendeeSchema = z.object({
   name: z.string().min(1, { message: "Name is required." }),
@@ -33,7 +38,7 @@ const attendeeSchema = z.object({
     .min(0, { message: "Total meals must be a non-negative number." }),
 });
 
-const AddPerson = () => {
+export const AddPerson = () => {
   const form = useForm<z.infer<typeof attendeeSchema>>({
     resolver: zodResolver(attendeeSchema),
     defaultValues: {
@@ -45,6 +50,40 @@ const AddPerson = () => {
     },
   });
 
+  const { activeEvent } = useEvent();
+
+  async function onSubmit(data: z.infer<typeof attendeeSchema>) {
+    const { name, organisation, role, payment_status, total_meals } = data;
+
+    if (!activeEvent) {
+      toast.error("No event selected.");
+      return;
+    }
+
+    const { error } = await client
+      .from("Attendees")
+      .insert({
+        name,
+        organisation,
+        role,
+        payment_status,
+        total_meals,
+        event: activeEvent.name,
+      })
+      .single();
+
+    if (error) {
+      toast.error("Failed to create attendee", {
+        description: error.message,
+      });
+      return;
+    }
+
+    toast.success("Attendee created successfully!");
+
+    form.reset();
+  }
+
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -54,7 +93,7 @@ const AddPerson = () => {
         <DialogTitle className="text-2xl font-bold mb-4">
           Add Person
         </DialogTitle>
-        <form className="space-y-4">
+        <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
           <FieldGroup>
             <Controller
               name="name"
@@ -63,6 +102,9 @@ const AddPerson = () => {
                 <Field data-invalid={fieldState.invalid}>
                   <Label htmlFor="name-1">Name</Label>
                   <Input id="name-1" {...field} placeholder="Enter full name" />
+                  {fieldState.error && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
                 </Field>
               )}
             />
@@ -77,6 +119,9 @@ const AddPerson = () => {
                     {...field}
                     placeholder="Enter organization name"
                   />
+                  {fieldState.error && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
                 </Field>
               )}
             />
@@ -87,6 +132,9 @@ const AddPerson = () => {
                 <Field data-invalid={fieldState.invalid}>
                   <Label htmlFor="role-1">Role</Label>
                   <Input id="role-1" {...field} placeholder="Enter role" />
+                  {fieldState.error && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
                 </Field>
               )}
             />
@@ -111,6 +159,9 @@ const AddPerson = () => {
                       </SelectGroup>
                     </SelectContent>
                   </Select>
+                  {fieldState.error && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
                 </Field>
               )}
             />
@@ -123,13 +174,29 @@ const AddPerson = () => {
                   <Input
                     id="total_meals-1"
                     type="number"
+                    min={0}
+                    step={1}
                     {...field}
+                    onChange={(e) =>
+                      field.onChange(
+                        e.target.value === "" ? 0 : e.target.valueAsNumber,
+                      )
+                    }
                     placeholder="Enter total meals"
                   />
+                  {fieldState.error && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
                 </Field>
               )}
             />
           </FieldGroup>
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button variant="outline">Cancel</Button>
+            </DialogClose>
+            <Button type="submit">Add Person +</Button>
+          </DialogFooter>
         </form>
       </DialogContent>
     </Dialog>
