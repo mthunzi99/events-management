@@ -140,14 +140,14 @@ export const peopleColumns: ColumnDef<People>[] = [
             name: person.name,
             organisation: person.organisation,
             role: person.role,
+            transport: "spool",
+            destination: "Xprinter XP-370B",
           });
 
           await markBadgePrinted(person.id);
 
           toast.dismiss(loading);
           toast.success("Badge printed successfully!");
-
-          window.location.reload();
         } catch (err: any) {
           toast.error("Failed to print badge", {
             description: err.message,
