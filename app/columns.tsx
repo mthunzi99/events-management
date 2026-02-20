@@ -12,6 +12,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ArrowUpDown, Ellipsis } from "lucide-react";
+import { toast } from "sonner";
+import { markBadgePrinted } from "@/lib/attendees";
+import { printBadge } from "@/lib/printer";
 
 export type People = {
   id: string;
@@ -92,14 +95,14 @@ export const peopleColumns: ColumnDef<People>[] = [
       );
     },
     cell: ({ row }) => {
-      const status = row.getValue("payment");
+      const status: string = row.getValue("payment") as string;
       return (
         <div
           className={cn(
             `px-2 py-1 rounded-full text-xs w-max font-medium`,
-            status === "Paid" && "bg-green-500/40",
-            status === "Unpaid" && "bg-red-500/40",
-            status === "Pending" && "bg-yellow-500/40",
+            status.toLowerCase() === "paid" && "bg-green-500/40",
+            status.toLowerCase() === "unpaid" && "bg-red-500/40",
+            status.toLowerCase() === "pending" && "bg-yellow-500/40",
           )}
         >
           {status as string}
@@ -125,11 +128,37 @@ export const peopleColumns: ColumnDef<People>[] = [
     accessorKey: "last_printed",
     header: "Last Printed",
     cell: ({ row }) => {
-      const lastPrinted = row.getValue("last_printed") as Date;
+      const person = row.original;
+      const lastPrinted = person.last_printed;
+
+      const handlePrint = async () => {
+        try {
+          const loading = toast.loading("Printing badge...");
+
+          await printBadge({
+            id: person.id,
+            name: person.name,
+            organisation: person.organisation,
+            role: person.role,
+          });
+
+          await markBadgePrinted(person.id);
+
+          toast.dismiss(loading);
+          toast.success("Badge printed successfully!");
+
+          window.location.reload();
+        } catch (err: any) {
+          toast.error("Failed to print badge", {
+            description: err.message,
+          });
+        }
+      };
+
       return lastPrinted ? (
-        <div>{lastPrinted.toLocaleString()}</div>
+        <div>{new Date(lastPrinted).toLocaleString()}</div>
       ) : (
-        <Button variant="outline" size="sm">
+        <Button variant="outline" size="sm" onClick={handlePrint}>
           Print Badge
         </Button>
       );

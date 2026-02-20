@@ -57,15 +57,7 @@ export function EventsMenu() {
     fetchEvents(); // Refresh the events list after deletion
   };
 
-  const { setActiveEvent } = useEvent();
-
-  const isActive = (eventName: string) => {
-    const activeEvent = localStorage.getItem("activeEvent");
-    if (activeEvent && JSON.parse(activeEvent).name === eventName) {
-      return true;
-    }
-    return false;
-  };
+  const { activeEvent, setActiveEvent } = useEvent();
 
   useEffect(() => {
     fetchEvents();
@@ -76,41 +68,43 @@ export function EventsMenu() {
       {events.map((event) => (
         <SidebarMenuItem key={event.event}>
           <SidebarMenuButton
-            isActive={isActive(event.event)}
+            isActive={activeEvent?.name === event.event}
             onClick={() => setActiveEvent({ name: event.event })}
           >
             <Calendar className="h-4 w-4" />
             <span>{event.event}</span>
           </SidebarMenuButton>
-          <SidebarMenuAction>
-            <AlertDialog>
-              <AlertDialogTrigger className="cursor-pointer">
+          <AlertDialog>
+            <AlertDialogTrigger className="cursor-pointer" asChild>
+              <SidebarMenuAction>
                 <Trash className="h-4 w-4 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 text-destructive focus-visible:border-destructive/40" />
                 <span className="sr-only">Delete Event</span>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>
-                    Are you absolutely sure you want to delete this event?
-                  </AlertDialogTitle>
-                  <AlertDialogDescription>
-                    This action cannot be undone. This will permanently delete
-                    the event from our servers along with all its accompanying
-                    data.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction
-                    variant={"destructive"}
-                    onClick={deleteEvent(event.event)}
-                  >
-                    Delete
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
-          </SidebarMenuAction>
+              </SidebarMenuAction>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>
+                  Are you absolutely sure you want to delete this event?
+                </AlertDialogTitle>
+                <AlertDialogDescription>
+                  This action cannot be undone. This will permanently delete the
+                  event from our servers along with all its accompanying data.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  variant={"destructive"}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    deleteEvent(event.event)();
+                  }}
+                >
+                  Delete
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </SidebarMenuItem>
       ))}
     </SidebarMenu>

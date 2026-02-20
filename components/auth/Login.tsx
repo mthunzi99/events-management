@@ -32,7 +32,7 @@ const loginSchema = z.object({
     })
     .refine((password) => /[!@#$%^&*_()`.<>;:'"`{}]/.test(password), {
       message:
-        "Password must contain at least one special character (!@#$%^&*)",
+        "Password must contain at least one special character (!@#$%^&*().`<>;:'\"`{})",
     }),
 });
 
@@ -70,12 +70,12 @@ export function Login() {
         <CardTitle className="text-2xl font-bold mb-4">Login</CardTitle>
         <CardDescription>Login to your account and get started</CardDescription>
       </CardHeader>
-      <CardContent>
-        <form
-          className="space-y-4"
-          id="form-login"
-          onSubmit={form.handleSubmit(onSubmit)}
-        >
+      <form
+        className="space-y-4"
+        id="form-login"
+        onSubmit={form.handleSubmit(onSubmit)}
+      >
+        <CardContent>
           <FieldGroup>
             <Controller
               name="email"
@@ -115,18 +115,18 @@ export function Login() {
               )}
             />
           </FieldGroup>
-        </form>
-      </CardContent>
-      <CardFooter>
-        <Button
-          variant={"default"}
-          type="submit"
-          form="form-rhf-login"
-          className="w-full"
-        >
-          Login
-        </Button>
-      </CardFooter>
+        </CardContent>
+        <CardFooter>
+          <Button
+            variant={"default"}
+            type="submit"
+            form="form-login"
+            className="w-full"
+          >
+            Login
+          </Button>
+        </CardFooter>
+      </form>
     </Card>
   );
 }

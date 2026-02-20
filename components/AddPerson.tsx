@@ -30,7 +30,7 @@ const attendeeSchema = z.object({
   name: z.string().min(1, { message: "Name is required." }),
   organisation: z.string().min(1, { message: "Organization is required." }),
   role: z.string().min(1, { message: "Role is required." }),
-  payment_status: z.enum(["paid", "pending"], {
+  payment: z.enum(["Paid", "Pending"], {
     message: "Payment status is required.",
   }),
   total_meals: z
@@ -45,7 +45,7 @@ export const AddPerson = () => {
       name: "",
       organisation: "",
       role: "",
-      payment_status: "pending",
+      payment: "Pending",
       total_meals: 0,
     },
   });
@@ -53,7 +53,7 @@ export const AddPerson = () => {
   const { activeEvent } = useEvent();
 
   async function onSubmit(data: z.infer<typeof attendeeSchema>) {
-    const { name, organisation, role, payment_status, total_meals } = data;
+    const { name, organisation, role, payment, total_meals } = data;
 
     if (!activeEvent) {
       toast.error("No event selected.");
@@ -66,7 +66,7 @@ export const AddPerson = () => {
         name,
         organisation,
         role,
-        payment_status,
+        payment,
         total_meals,
         event: activeEvent.name,
       })
@@ -139,13 +139,14 @@ export const AddPerson = () => {
               )}
             />
             <Controller
-              name="payment_status"
+              name="payment"
               control={form.control}
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
                   <Select
                     {...field}
                     onValueChange={(value) => field.onChange(value)}
+                    defaultValue={"Pending"}
                   >
                     <Label>Payment Status</Label>
                     <SelectTrigger className="w-full max-w-48">
@@ -154,8 +155,8 @@ export const AddPerson = () => {
                     <SelectContent>
                       <SelectGroup>
                         <SelectLabel>Payment Status</SelectLabel>
-                        <SelectItem value="paid">Paid</SelectItem>
-                        <SelectItem value="pending">Pending</SelectItem>
+                        <SelectItem value="Paid">Paid</SelectItem>
+                        <SelectItem value="Pending">Pending</SelectItem>
                       </SelectGroup>
                     </SelectContent>
                   </Select>

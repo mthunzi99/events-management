@@ -64,9 +64,6 @@ const AppSideBar = () => {
           <SidebarGroupContent>
             <EventsMenu />
           </SidebarGroupContent>
-          <SidebarGroupContent>
-            <SidebarMenu></SidebarMenu>
-          </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
     </Sidebar>
