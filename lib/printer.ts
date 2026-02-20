@@ -3,11 +3,13 @@ export type PrintBadgePayload = {
   name: string;
   organisation: string;
   role: string;
+  transport: string;
+  destination: string;
 };
 
 export async function printBadge(data: PrintBadgePayload) {
   try {
-    const res = await fetch("http://127.0.0.1:8000/print/label", {
+    const res = await fetch("http://192.168.127.1:8000/print/label", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
