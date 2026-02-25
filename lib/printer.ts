@@ -28,3 +28,5 @@ export async function printBadge(data: PrintBadgePayload) {
     throw err;
   }
 }
+
+export async function printMealCoupon(id: string) {}

@@ -13,8 +13,10 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ArrowUpDown, Ellipsis } from "lucide-react";
 import { toast } from "sonner";
-import { markBadgePrinted } from "@/lib/attendees";
+import { deleteAttendee, markBadgePrinted } from "@/lib/attendees";
 import { printBadge } from "@/lib/printer";
+import { useScannerContext } from "@/components/context/ScannerProvider";
+import client from "@/api/client";
 
 export type People = {
   id: string;
@@ -167,7 +169,8 @@ export const peopleColumns: ColumnDef<People>[] = [
   {
     id: "actions",
     cell: ({ row }) => {
-      const payment = row.original;
+      const attendee = row.original;
+      const { openDialog } = useScannerContext();
 
       return (
         <DropdownMenu>
@@ -179,14 +182,14 @@ export const peopleColumns: ColumnDef<People>[] = [
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(payment.id)}
-            >
-              Copy payment ID
+            <DropdownMenuItem onClick={() => openDialog(attendee.id)}>
+              View / Edit Attendee
             </DropdownMenuItem>
+
             <DropdownMenuSeparator />
-            <DropdownMenuItem>View customer</DropdownMenuItem>
-            <DropdownMenuItem>View payment details</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => deleteAttendee(attendee)}>
+              Delete Attendee
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );

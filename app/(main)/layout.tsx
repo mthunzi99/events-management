@@ -6,6 +6,7 @@ import useAuth from "@/hooks/useAuth";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import AppSideBar from "@/components/AppSideBar";
 import NavBar from "@/components/NavBar";
+import { ViewAttendee } from "@/components/ViewAttendee";
 
 const PrivatePagesLayout = ({
   children,
@@ -27,7 +28,12 @@ const PrivatePagesLayout = ({
     return null;
   }
 
-  return <>{children}</>;
+  return (
+    <>
+      {children}
+      <ViewAttendee />
+    </>
+  );
 };
 
 export default PrivatePagesLayout;
