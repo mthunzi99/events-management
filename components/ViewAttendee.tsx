@@ -16,6 +16,7 @@ import { useEffect, useState } from "react";
 import client from "@/api/client";
 import { toast } from "sonner";
 import { printMealCoupon } from "@/lib/printer";
+import { checkInAttendee } from "@/lib/attendees";
 
 type Attendee = {
   id: string;
@@ -108,6 +109,17 @@ export function ViewAttendee() {
     }
   };
 
+  const handleCheckIn = async () => {
+    if (!attendee) return;
+
+    try {
+      await checkInAttendee(attendee.id);
+      toast.success("Attendee checked in");
+    } catch (err) {
+      toast.error("Failed to check in attendee");
+    }
+  };
+
   return (
     <Dialog
       open={isDialogOpen}
@@ -163,6 +175,11 @@ export function ViewAttendee() {
           {/* Print meal */}
           <Button variant="outline" onClick={handlePrintMeal}>
             Print Meal Coupon
+          </Button>
+
+          {/* Check-in */}
+          <Button variant="outline" onClick={handleCheckIn}>
+            Check-in
           </Button>
         </DialogFooter>
       </DialogContent>

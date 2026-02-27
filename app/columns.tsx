@@ -13,10 +13,13 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ArrowUpDown, Ellipsis } from "lucide-react";
 import { toast } from "sonner";
-import { deleteAttendee, markBadgePrinted } from "@/lib/attendees";
+import {
+  checkInAttendee,
+  deleteAttendee,
+  markBadgePrinted,
+} from "@/lib/attendees";
 import { printBadge } from "@/lib/printer";
 import { useScannerContext } from "@/components/context/ScannerProvider";
-import client from "@/api/client";
 
 export type People = {
   id: string;
@@ -172,6 +175,30 @@ export const peopleColumns: ColumnDef<People>[] = [
       const attendee = row.original;
       const { openDialog } = useScannerContext();
 
+      const handlePrint = async () => {
+        try {
+          const loading = toast.loading("Printing badge...");
+
+          await printBadge({
+            id: attendee.id,
+            name: attendee.name,
+            organisation: attendee.organisation,
+            role: attendee.role,
+            transport: "spool",
+            destination: "Xprinter XP-370B",
+          });
+
+          await markBadgePrinted(attendee.id);
+
+          toast.dismiss(loading);
+          toast.success("Badge printed successfully!");
+        } catch (err: any) {
+          toast.error("Failed to print badge", {
+            description: err.message,
+          });
+        }
+      };
+
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -183,9 +210,14 @@ export const peopleColumns: ColumnDef<People>[] = [
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem onClick={() => openDialog(attendee.id)}>
-              View / Edit Attendee
+              View / Edit
             </DropdownMenuItem>
-
+            <DropdownMenuItem onClick={() => checkInAttendee(attendee.id)}>
+              Check-in
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={handlePrint}>
+              {attendee.last_printed ? "Reprint Badge" : "Print Badge"}
+            </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={() => deleteAttendee(attendee)}>
               Delete Attendee

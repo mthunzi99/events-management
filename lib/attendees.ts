@@ -32,3 +32,16 @@ export async function deleteAttendee(attendee: Attendee) {
     toast.success("Attendee deleted");
   }
 }
+
+export async function checkInAttendee(id: string) {
+  const { error } = await client
+    .from("Attendees")
+    .update({ checkin: new Date().toISOString() })
+    .eq("id", id);
+
+  if (error) {
+    toast.error("Failed to check in attendee", { description: error.message });
+  } else {
+    toast.success("Attendee checked in");
+  }
+}
