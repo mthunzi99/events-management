@@ -36,7 +36,7 @@ export async function deleteAttendee(attendee: Attendee) {
 export async function checkInAttendee(id: string) {
   const { error } = await client
     .from("Attendees")
-    .update({ checkin: new Date().toISOString() })
+    .update({ check_in: new Date().toISOString() })
     .eq("id", id);
 
   if (error) {

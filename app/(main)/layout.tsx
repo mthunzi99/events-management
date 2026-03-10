@@ -7,6 +7,7 @@ import { SidebarProvider } from "@/components/ui/sidebar";
 import AppSideBar from "@/components/AppSideBar";
 import NavBar from "@/components/NavBar";
 import { ViewAttendee } from "@/components/ViewAttendee";
+import { AttendeeProvider } from "@/components/context/AttendeeProvider";
 
 const PrivatePagesLayout = ({
   children,
@@ -30,8 +31,10 @@ const PrivatePagesLayout = ({
 
   return (
     <>
-      {children}
-      <ViewAttendee />
+      <AttendeeProvider>
+        {children}
+        <ViewAttendee />
+      </AttendeeProvider>
     </>
   );
 };
