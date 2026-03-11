@@ -68,7 +68,7 @@ export const AddPerson = () => {
         role,
         payment,
         total_meals,
-        event: activeEvent.name,
+        event: activeEvent.event,
       })
       .single();
 

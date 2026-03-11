@@ -2,11 +2,13 @@
 
 import { createContext, useContext, useEffect, useState } from "react";
 import client from "@/api/client";
+import { useEvent } from "./EventProvider";
 
 export type People = {
   id: string;
   name: string;
   organisation: string;
+  event: string;
   role: string;
   payment: "Paid" | "Unpaid" | "Pending";
   check_in: Date;
@@ -22,22 +24,34 @@ const AttendeeContext = createContext<AttendeeContextType | null>(null);
 
 export function AttendeeProvider({ children }: { children: React.ReactNode }) {
   const [attendees, setAttendees] = useState<People[]>([]);
+  const { activeEvent } = useEvent();
 
   // Initial fetch
   useEffect(() => {
-    const fetchAttendees = async () => {
-      const { data, error } = await client.from("Attendees").select("*");
+    if (!activeEvent) {
+      setAttendees([]);
+      return;
+    }
+    console.log(activeEvent.event);
 
+    const fetchAttendees = async () => {
+      const { data, error } = await client
+        .from("Attendees")
+        .select("*")
+        .eq("event", activeEvent.event)
+        .order("created_at", { ascending: false });
       if (!error && data) {
         setAttendees(data as People[]);
       }
     };
 
     fetchAttendees();
-  }, []);
+  }, [activeEvent]);
 
   // Realtime subscription
   useEffect(() => {
+    if (!activeEvent) return;
+
     const channel = client
       .channel("attendees-changes")
       .on(
@@ -48,6 +62,9 @@ export function AttendeeProvider({ children }: { children: React.ReactNode }) {
           table: "Attendees",
         },
         (payload) => {
+          const attendee = payload.new as People;
+          if (attendee.event !== activeEvent?.event) return;
+
           setAttendees((prev) => {
             if (payload.eventType === "INSERT") {
               return [...prev, payload.new as People];
@@ -72,7 +89,7 @@ export function AttendeeProvider({ children }: { children: React.ReactNode }) {
     return () => {
       client.removeChannel(channel);
     };
-  }, []);
+  }, [activeEvent]);
 
   return (
     <AttendeeContext.Provider value={{ attendees, setAttendees }}>

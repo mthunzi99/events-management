@@ -68,8 +68,8 @@ export function EventsMenu() {
       {events.map((event) => (
         <SidebarMenuItem key={event.event}>
           <SidebarMenuButton
-            isActive={activeEvent?.name === event.event}
-            onClick={() => setActiveEvent({ name: event.event })}
+            isActive={activeEvent?.event === event.event}
+            onClick={() => setActiveEvent({ event: event.event })}
           >
             <Calendar className="h-4 w-4" />
             <span>{event.event}</span>

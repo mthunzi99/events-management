@@ -2,8 +2,8 @@
 
 import { createContext, useContext, useEffect, useState } from "react";
 
-type EventType = {
-  name: string;
+export type EventType = {
+  event: string;
 };
 
 type EventContextType = {
