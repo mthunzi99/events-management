@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react";
 import client from "@/api/client";
-import { People } from "../columns";
-import { EventType } from "@/components/context/EventProvider";
+import { People, peopleColumns } from "../columns";
+import { EventType, useEvent } from "@/components/context/EventProvider";
 import {
   Select,
   SelectContent,
@@ -13,31 +13,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { DataTable } from "@/components/ui/data-table";
 
 export default function Events() {
+  const { events } = useEvent(); // Get all events from context so that they can be listed and updated in realtime
   const [data, setData] = useState<People[]>([]);
-  const [events, setEvents] = useState<EventType[]>([]);
-  const [activeEvent, setActiveEvent] = useState<EventType | null>(null);
-
-  const fetchEvents = async () => {
-    const { data, error } = await client
-      .from("Events")
-      .select("*")
-      .order("from_date", { ascending: true });
-
-    if (error) {
-      console.error("Error fetching events:", error);
-    } else {
-      setEvents(data);
-    }
-  };
+  const [event, setEvent] = useState<EventType | null>(null); // Local state for selected event, separate from context's activeEvent
 
   const fetchAttendees = async () => {
-    if (!activeEvent) return;
+    if (!event) return;
     const { data, error } = await client
       .from("Attendees")
       .select("*")
-      .eq("event", activeEvent.event)
+      .eq("event", event.event)
       .order("created_at", { ascending: false });
 
     if (error) {
@@ -49,36 +37,50 @@ export default function Events() {
 
   useEffect(() => {
     fetchAttendees();
-  }, [activeEvent]);
+  }, [event]); // Refetch attendees whenever the selected event changes
 
-  useEffect(() => {
-    fetchEvents();
-  }, []);
+  const handleEventChange = (eventName: string) => {
+    const selected = events.find((e) => e.event === eventName);
+    if (selected) {
+      setEvent(selected);
+    }
+  };
 
   return (
     <div className="py-10 p-8">
       <h1 className="text-3xl font-bold mb-6">
-        {activeEvent?.event || "Select an Event"}
+        {event?.event || "Select an Event"}
       </h1>
-      <Select>
+      <Select
+        onValueChange={handleEventChange}
+        value={event?.event || undefined}
+      >
         <SelectTrigger className="w-full max-w-68">
           <SelectValue placeholder="Events" />
         </SelectTrigger>
         <SelectContent>
           <SelectGroup>
             <SelectLabel>Events</SelectLabel>
-            {events.map((event) => (
+            {events.map((e) => (
               <SelectItem
-                key={event.event}
-                value={event.event}
-                onClick={() => setActiveEvent(event)}
+                key={e.event || "unknown"}
+                value={e.event || "unknown"}
               >
-                {event.event}
+                {e.event || "Unnamed Event"}
               </SelectItem>
             ))}
           </SelectGroup>
         </SelectContent>
       </Select>
+      <div className="py-6">
+        <h1 className="text-3xl font-bold mb-6">
+          {event
+            ? `Attendees for ${event.event}`
+            : "Please select an event to view attendees"}
+        </h1>
+
+        <DataTable columns={peopleColumns} data={data} />
+      </div>
     </div>
   );
 }
