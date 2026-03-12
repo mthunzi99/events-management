@@ -14,6 +14,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { DataTable } from "@/components/ui/data-table";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function Events() {
   const { events } = useEvent(); // Get all events from context so that they can be listed and updated in realtime
@@ -22,16 +23,30 @@ export default function Events() {
 
   const fetchAttendees = async () => {
     if (!event) return;
-    const { data, error } = await client
-      .from("Attendees")
-      .select("*")
-      .eq("event", event.event)
-      .order("created_at", { ascending: false });
+    if (event.event === "All Events") {
+      // If "All Events" is selected, fetch attendees for all events
+      const { data, error } = await client
+        .from("Attendees")
+        .select("*")
+        .order("created_at", { ascending: false });
 
-    if (error) {
-      console.error("Error fetching attendees:", error);
+      if (error) {
+        console.error("Error fetching attendees:", error);
+      } else {
+        setData(data);
+      }
     } else {
-      setData(data);
+      const { data, error } = await client
+        .from("Attendees")
+        .select("*")
+        .eq("event", event.event)
+        .order("created_at", { ascending: false });
+
+      if (error) {
+        console.error("Error fetching attendees:", error);
+      } else {
+        setData(data);
+      }
     }
   };
 
@@ -41,6 +56,9 @@ export default function Events() {
 
   const handleEventChange = (eventName: string) => {
     const selected = events.find((e) => e.event === eventName);
+    if (eventName === "All Events") {
+      setEvent({ event: "All Events" } as EventType);
+    }
     if (selected) {
       setEvent(selected);
     }
@@ -51,6 +69,28 @@ export default function Events() {
       <h1 className="text-3xl font-bold mb-6">
         {event?.event || "Select an Event"}
       </h1>
+      <div className="grid grid-cols-2 gap-4 mb-13">
+        <Card className="h-80"></Card>
+        <div className="flex flex-col space-y-4">
+          <Card className="h-full">
+            <CardHeader>
+              <CardTitle className="text-xl font-semibold mb-2">
+                Event Details
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="text-sm flex flex-col space-y-2">
+              <p>Venue: {event?.venue || "No description available."}</p>
+              <p>
+                Dates:{" "}
+                {event?.from_date
+                  ? `${new Date(event.from_date).toLocaleDateString()} - ${new Date(event.to_date || event.from_date).toLocaleDateString()}`
+                  : "No dates available."}
+              </p>
+            </CardContent>
+          </Card>
+          <Card className="h-full"></Card>
+        </div>
+      </div>
       <Select
         onValueChange={handleEventChange}
         value={event?.event || undefined}
@@ -61,11 +101,11 @@ export default function Events() {
         <SelectContent>
           <SelectGroup>
             <SelectLabel>Events</SelectLabel>
+            <SelectItem key={"All Events"} value={"All Events"}>
+              All Events
+            </SelectItem>
             {events.map((e) => (
-              <SelectItem
-                key={e.event || "unknown"}
-                value={e.event || "unknown"}
-              >
+              <SelectItem key={e.event} value={e.event || "unknown"}>
                 {e.event || "Unnamed Event"}
               </SelectItem>
             ))}
@@ -74,9 +114,9 @@ export default function Events() {
       </Select>
       <div className="py-6">
         <h1 className="text-3xl font-bold mb-6">
-          {event
-            ? `Attendees for ${event.event}`
-            : "Please select an event to view attendees"}
+          {event?.event === "All Events"
+            ? "Attendees for  All Events"
+            : `Attendees for ${event?.event || "Select an Event"}`}
         </h1>
 
         <DataTable columns={peopleColumns} data={data} />

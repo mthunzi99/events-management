@@ -34,6 +34,8 @@ export function DataTable<TData, TValue>({
   columns,
   data,
 }: DataTableProps<TData, TValue>) {
+  const [total, setTotal] = useState(0);
+
   const [sorting, setSorting] = React.useState<SortingState>([]);
 
   const [rowSelection, setRowSelection] = useState({});
@@ -81,7 +83,9 @@ export function DataTable<TData, TValue>({
           }
           className="max-w-sm"
         />
-
+        <span className="text-sm text-muted-foreground">
+          {sorting.length} of {table.getRowModel().rows.length} row(s) selected.
+        </span>
         <AddPerson />
       </div>
       <Table>

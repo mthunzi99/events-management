@@ -5,6 +5,9 @@ import client from "@/api/client";
 
 export type EventType = {
   event: string;
+  venue?: string;
+  from_date?: string;
+  to_date?: string;
 };
 
 type EventContextType = {
