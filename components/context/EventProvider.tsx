@@ -44,7 +44,7 @@ export function EventProvider({ children }: { children: React.ReactNode }) {
     const fetchEvents = async () => {
       const { data, error } = await client
         .from("Events")
-        .select("event")
+        .select("event, venue, from_date, to_date")
         .order("from_date", { ascending: true });
 
       if (!error && data) {
