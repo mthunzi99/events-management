@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import client from "@/api/client";
-import { People, peopleColumns } from "../columns";
+import { People, peopleColumns } from "../../columns";
 import { EventType, useEvent } from "@/components/context/EventProvider";
 import {
   Select,
@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/select";
 import { DataTable } from "@/components/ui/data-table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { PrintsChart } from "@/components/PrintsChart";
 
 export default function Events() {
   const { events } = useEvent(); // Get all events from context so that they can be listed and updated in realtime
@@ -69,28 +70,6 @@ export default function Events() {
       <h1 className="text-3xl font-bold mb-6">
         {event?.event || "Select an Event"}
       </h1>
-      <div className="grid grid-cols-2 gap-4 mb-13">
-        <Card className="h-80"></Card>
-        <div className="flex flex-col space-y-4">
-          <Card className="h-full">
-            <CardHeader>
-              <CardTitle className="text-xl font-semibold mb-2">
-                Event Details
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="text-sm flex flex-col space-y-2">
-              <p>Venue: {event?.venue || "No description available."}</p>
-              <p>
-                Dates:{" "}
-                {event?.from_date
-                  ? `${new Date(event.from_date).toLocaleDateString()} - ${new Date(event.to_date || event.from_date).toLocaleDateString()}`
-                  : "No dates available."}
-              </p>
-            </CardContent>
-          </Card>
-          <Card className="h-full"></Card>
-        </div>
-      </div>
       <Select
         onValueChange={handleEventChange}
         value={event?.event || undefined}
@@ -112,6 +91,32 @@ export default function Events() {
           </SelectGroup>
         </SelectContent>
       </Select>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 my-10">
+        <PrintsChart />
+        <div className="flex flex-col space-y-4">
+          <Card className="h-full">
+            <CardHeader>
+              <CardTitle className="text-xl font-semibold mb-2">
+                Event Details
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="text-sm flex flex-col space-y-2">
+              <p>Venue: {event?.venue || "No description available."}</p>
+              <p>
+                Dates:{" "}
+                {event?.from_date
+                  ? `${new Date(event.from_date).toLocaleDateString()} - ${new Date(event.to_date || event.from_date).toLocaleDateString()}`
+                  : "No dates available."}
+              </p>
+            </CardContent>
+          </Card>
+          <Card className="h-full flex flex-col space-y-2">
+            <CardContent className="text-sm">
+              <p>Total Attendees: {data.length}</p>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
       <div className="py-6">
         <h1 className="text-3xl font-bold mb-6">
           {event?.event === "All Events"

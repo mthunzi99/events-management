@@ -45,7 +45,7 @@ export function ScannerProvider({ children }: { children: React.ReactNode }) {
     let startTime = 0;
 
     const LENGTH = 35;
-    const MAX_TIME = 400; // milliseconds (0.4 sec)
+    const MAX_TIME = 500; // milliseconds (0.4 sec)
 
     const handleKeyDown = (e: KeyboardEvent) => {
       const target = e.target as HTMLElement;
@@ -69,7 +69,7 @@ export function ScannerProvider({ children }: { children: React.ReactNode }) {
         if (buffer.length >= LENGTH && duration <= MAX_TIME) {
           if (isDialogOpen) return;
 
-          // ✅ Scanner detected
+          // Scanner detected
           toast.success("Scanner success!", {
             description: buffer,
           });
