@@ -16,7 +16,7 @@ import { SidebarGroupAction } from "./ui/sidebar";
 import { Plus } from "lucide-react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
-import z from "zod";
+import z, { int32, number } from "zod";
 import { DatePickerWithRange } from "./DatePickerWithRange";
 import { toast } from "sonner";
 import client from "@/api/client";
@@ -26,6 +26,10 @@ const eventSchema = z.object({
   venue: z.string().min(1, { message: "Venue is required." }),
   from_date: z.date({ message: "Start date is required." }),
   to_date: z.date({ message: "End date is required." }),
+  default_num_meals: z
+    .number()
+    .min(0, { message: "Default number of meals must be 0 or more." })
+    .optional(),
 });
 
 const AddEvent = () => {
@@ -36,11 +40,12 @@ const AddEvent = () => {
       venue: "",
       from_date: new Date(),
       to_date: new Date(),
+      default_num_meals: 0,
     },
   });
 
   async function onSubmit(data: z.infer<typeof eventSchema>) {
-    const { event, venue, from_date, to_date } = data;
+    const { event, venue, from_date, to_date, default_num_meals } = data;
 
     const { error } = await client
       .from("Events")
@@ -49,6 +54,7 @@ const AddEvent = () => {
         venue,
         from_date: from_date.toLocaleDateString("en-CA"),
         to_date: to_date.toLocaleDateString("en-CA"),
+        default_num_meals,
       })
       .single();
 
@@ -135,6 +141,33 @@ const AddEvent = () => {
                         range.to ?? range.from ?? new Date(),
                       );
                     }}
+                  />
+                  {fieldState.error && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </Field>
+              )}
+            />
+            <Controller
+              name="default_num_meals"
+              control={form.control}
+              render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.invalid}>
+                  <Label htmlFor="default_num_meals">
+                    Default Number of Meals
+                  </Label>
+                  <Input
+                    id="default_num_meals"
+                    type="number"
+                    min={0}
+                    step={1}
+                    {...field}
+                    onChange={(e) =>
+                      field.onChange(
+                        e.target.value === "" ? 0 : e.target.valueAsNumber,
+                      )
+                    }
+                    placeholder="Enter default number of meals (optional)"
                   />
                   {fieldState.error && (
                     <FieldError errors={[fieldState.error]} />
