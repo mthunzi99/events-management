@@ -25,6 +25,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import client from "@/api/client";
 import { useEvent } from "./context/EventProvider";
+import { useEffect } from "react";
 
 const attendeeSchema = z.object({
   name: z.string().min(1, { message: "Name is required." }),
@@ -83,6 +84,15 @@ export const AddPerson = () => {
 
     form.reset();
   }
+
+  useEffect(() => {
+    if (activeEvent?.default_num_meals != null) {
+      form.reset({
+        ...form.getValues(), // keep other fields
+        total_meals: activeEvent.default_num_meals,
+      });
+    }
+  }, [activeEvent, form]);
 
   return (
     <Dialog>

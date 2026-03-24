@@ -8,6 +8,7 @@ export type EventType = {
   venue?: string;
   from_date?: string;
   to_date?: string;
+  default_num_meals?: number;
 };
 
 type EventContextType = {
@@ -44,7 +45,7 @@ export function EventProvider({ children }: { children: React.ReactNode }) {
     const fetchEvents = async () => {
       const { data, error } = await client
         .from("Events")
-        .select("event, venue, from_date, to_date")
+        .select("event, venue, from_date, to_date, default_num_meals")
         .order("from_date", { ascending: true });
 
       if (!error && data) {
