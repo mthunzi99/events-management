@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import client from "@/api/client";
-import { People, peopleColumns } from "../../columns";
+import { peopleColumns } from "../../columns";
+import { People } from "@/components/context/AttendeeProvider";
 import { EventType, useEvent } from "@/components/context/EventProvider";
 import {
   Select,

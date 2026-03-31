@@ -1,5 +1,5 @@
 "use client";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ArrowUpDown, Ellipsis } from "lucide-react";
 import { toast } from "sonner";
+import { People } from "@/components/context/AttendeeProvider";
 import {
   checkInAttendee,
   deleteAttendee,
@@ -20,16 +21,8 @@ import {
 } from "@/lib/attendees";
 import { printBadge } from "@/lib/printer";
 import { useScannerContext } from "@/components/context/ScannerProvider";
-
-export type People = {
-  id: string;
-  name: string;
-  organisation: string;
-  role: string;
-  payment: "Paid" | "Unpaid" | "Pending";
-  check_in: Date;
-  last_printed: Date | null;
-};
+import { useEvent } from "@/components/context/EventProvider";
+import PrintButton from "@/components/PrintBadgeButton";
 
 export const peopleColumns: ColumnDef<People>[] = [
   {
@@ -136,36 +129,10 @@ export const peopleColumns: ColumnDef<People>[] = [
       const person = row.original;
       const lastPrinted = person.last_printed;
 
-      const handlePrint = async () => {
-        try {
-          const loading = toast.loading("Printing badge...");
-
-          await printBadge({
-            id: person.id,
-            name: person.name,
-            organisation: person.organisation,
-            role: person.role,
-            transport: "spool",
-            destination: "Xprinter XP-370B",
-          });
-
-          await markBadgePrinted(person.id);
-
-          toast.dismiss(loading);
-          toast.success("Badge printed successfully!");
-        } catch (err: any) {
-          toast.error("Failed to print badge", {
-            description: err.message,
-          });
-        }
-      };
-
       return lastPrinted ? (
         <div>{new Date(lastPrinted).toLocaleString()}</div>
       ) : (
-        <Button variant="outline" size="sm" onClick={handlePrint}>
-          Print Badge
-        </Button>
+        <PrintButton person={row.original} />
       );
     },
   },
@@ -176,16 +143,18 @@ export const peopleColumns: ColumnDef<People>[] = [
       const { openDialog } = useScannerContext();
 
       const handlePrint = async () => {
-        try {
-          const loading = toast.loading("Printing badge...");
+        const loading = toast.loading("Printing badge...");
 
+        try {
           await printBadge({
+            transport: "spool",
+            destination: "Xprinter XP-370B",
             id: attendee.id,
             name: attendee.name,
             organisation: attendee.organisation,
             role: attendee.role,
-            transport: "spool",
-            destination: "Xprinter XP-370B",
+            event: "",
+            type: "",
           });
 
           await markBadgePrinted(attendee.id);
@@ -193,6 +162,7 @@ export const peopleColumns: ColumnDef<People>[] = [
           toast.dismiss(loading);
           toast.success("Badge printed successfully!");
         } catch (err: any) {
+          toast.dismiss(loading);
           toast.error("Failed to print badge", {
             description: err.message,
           });

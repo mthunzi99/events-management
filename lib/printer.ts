@@ -1,15 +1,25 @@
 export type PrintBadgePayload = {
+  transport: string;
+  destination: string;
   id: string;
   name: string;
   organisation: string;
   role: string;
-  transport: string;
-  destination: string;
+  event: string;
+  type: string;
+};
+
+const BASE_URL = process.env.NEXT_PUBLIC_PRINTER_SERVER_URL;
+
+export type PrintMealCouponPayload = {
+  id: string;
 };
 
 export async function printBadge(data: PrintBadgePayload) {
   try {
-    const res = await fetch("http://192.168.127.1:8000/print/label", {
+    console.log("Printing badge with data:", data);
+    console.log("Base URL:", BASE_URL);
+    const res = await fetch(`${BASE_URL}/print/label`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -29,4 +39,24 @@ export async function printBadge(data: PrintBadgePayload) {
   }
 }
 
-export async function printMealCoupon(id: string) {}
+export async function printMealCoupon(data: PrintMealCouponPayload) {
+  try {
+    const res = await fetch(`${BASE_URL}/print/meal-coupon`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!res.ok) {
+      const text = await res.text();
+      throw new Error(text || "Printer API error");
+    }
+
+    return await res.json();
+  } catch (err) {
+    console.error("Print error:", err);
+    throw err;
+  }
+}
