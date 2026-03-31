@@ -13,6 +13,8 @@ export type People = {
   payment: "Paid" | "Unpaid" | "Pending";
   check_in: Date;
   last_printed: Date | null;
+  total_meals?: number;
+  redeemed_meals?: number;
 };
 
 type AttendeeContextType = {
