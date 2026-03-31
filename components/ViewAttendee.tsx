@@ -57,8 +57,7 @@ export function ViewAttendee() {
   const [attendee, setAttendee] = useState<People | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const { scannedAttendee, isDialogOpen, openDialog, closeDialog } =
-    useScannerContext();
+  const { scannedAttendee, isDialogOpen, closeDialog } = useScannerContext();
 
   useEffect(() => {
     if (!scannedAttendee?.id) return;
@@ -80,16 +79,10 @@ export function ViewAttendee() {
 
       setAttendee(data as People);
       setLoading(false);
-      //   openDialog(scannedAttendee.id);
     };
 
     fetchAttendee();
   }, [scannedAttendee]);
-
-  const updateField = (field: keyof People, value: string) => {
-    if (!attendee) return;
-    setAttendee({ ...attendee, [field]: value });
-  };
 
   const handlePrintMeal = async () => {
     if (!attendee) return;
