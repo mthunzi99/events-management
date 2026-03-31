@@ -17,16 +17,11 @@ import client from "@/api/client";
 import { toast } from "sonner";
 import { printMealCoupon } from "@/lib/printer";
 import { checkInAttendee } from "@/lib/attendees";
-
-type Attendee = {
-  id: string;
-  name: string;
-  organisation: string;
-  role: string;
-};
+import PrintButton from "./PrintBadgeButton";
+import { People } from "./context/AttendeeProvider";
 
 export function ViewAttendee() {
-  const [attendee, setAttendee] = useState<Attendee | null>(null);
+  const [attendee, setAttendee] = useState<People | null>(null);
   const [loading, setLoading] = useState(false);
 
   const { scannedAttendee, isDialogOpen, openDialog, closeDialog } =
@@ -50,7 +45,7 @@ export function ViewAttendee() {
         return;
       }
 
-      setAttendee(data as Attendee);
+      setAttendee(data as People);
       setLoading(false);
       //   openDialog(scannedAttendee.id);
     };
@@ -58,7 +53,7 @@ export function ViewAttendee() {
     fetchAttendee();
   }, [scannedAttendee]);
 
-  const updateField = (field: keyof Attendee, value: string) => {
+  const updateField = (field: keyof People, value: string) => {
     if (!attendee) return;
     setAttendee({ ...attendee, [field]: value });
   };
@@ -87,22 +82,11 @@ export function ViewAttendee() {
     toast.success("Attendee updated");
   };
 
-  const handlePrintBadge = async () => {
-    if (!attendee) return;
-
-    try {
-      // await printBadge(attendee.id);
-      toast.success("Badge sent to printer");
-    } catch {
-      toast.error("Badge printing failed");
-    }
-  };
-
   const handlePrintMeal = async () => {
     if (!attendee) return;
 
     try {
-      await printMealCoupon(attendee.id);
+      await printMealCoupon(attendee);
       toast.success("Meal coupon sent to printer");
     } catch (err) {
       toast.error("Meal coupon printing failed");
@@ -168,9 +152,7 @@ export function ViewAttendee() {
           </Button>
 
           {/* Print badge */}
-          <Button variant="secondary" onClick={handlePrintBadge}>
-            Print Badge
-          </Button>
+          {attendee && <PrintButton person={attendee} />}
 
           {/* Print meal */}
           <Button variant="outline" onClick={handlePrintMeal}>

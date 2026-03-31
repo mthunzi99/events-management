@@ -21,7 +21,6 @@ import {
 } from "@/lib/attendees";
 import { printBadge } from "@/lib/printer";
 import { useScannerContext } from "@/components/context/ScannerProvider";
-import { useEvent } from "@/components/context/EventProvider";
 import PrintButton from "@/components/PrintBadgeButton";
 
 export const peopleColumns: ColumnDef<People>[] = [
