@@ -23,6 +23,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import AddPerson from "../AddPerson";
+import ImportAttendees from "../attendees/ImportAttedees";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -86,7 +87,10 @@ export function DataTable<TData, TValue>({
         <span className="text-sm text-muted-foreground">
           {sorting.length} of {table.getRowModel().rows.length} row(s) selected.
         </span>
-        <AddPerson />
+        <div className="flex justify-end gap-4">
+          <ImportAttendees />
+          <AddPerson />
+        </div>
       </div>
       <Table>
         <TableHeader>
