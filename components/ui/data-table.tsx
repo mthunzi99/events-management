@@ -73,6 +73,9 @@ export function DataTable<TData extends { id: string }, TValue>({
     },
   });
 
+  const selectedRows = table.getFilteredSelectedRowModel().rows;
+  const selected = selectedRows.length;
+
   return (
     <div className="overflow-hidden rounded-md border">
       <div className="flex items-center p-4 justify-between">
@@ -85,7 +88,7 @@ export function DataTable<TData extends { id: string }, TValue>({
           className="max-w-sm"
         />
         <span className="text-sm text-muted-foreground">
-          {sorting.length} of {table.getRowModel().rows.length} row(s) selected.
+          {selected} of {table.getRowModel().rows.length} selected
         </span>
         <div className="flex justify-end gap-4">
           <AttendeeTableToolbar table={table} />
