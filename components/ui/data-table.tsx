@@ -24,14 +24,14 @@ import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import AddPerson from "../AddPerson";
 import ImportAttendees from "../attendees/ImportAttedees";
+import { AttendeeTableToolbar } from "../AttendeeTableToolBar";
 
-interface DataTableProps<TData, TValue> {
+interface DataTableProps<TData extends { id: string }, TValue> {
   columns: ColumnDef<TData, TValue>[];
-
   data: TData[];
 }
 
-export function DataTable<TData, TValue>({
+export function DataTable<TData extends { id: string }, TValue>({
   columns,
   data,
 }: DataTableProps<TData, TValue>) {
@@ -88,6 +88,7 @@ export function DataTable<TData, TValue>({
           {sorting.length} of {table.getRowModel().rows.length} row(s) selected.
         </span>
         <div className="flex justify-end gap-4">
+          <AttendeeTableToolbar table={table} />
           <ImportAttendees />
           <AddPerson />
         </div>

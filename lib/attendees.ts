@@ -33,6 +33,16 @@ export async function deleteAttendee(attendee: Attendee) {
   }
 }
 
+export async function bulkDeleteAttendees(ids: string[]): Promise<void> {
+  const { error } = await client.from("Attendees").delete().in("id", ids);
+
+  if (error) {
+    toast.error("Failed to delete attendees", { description: error.message });
+  } else {
+    toast.success(`${ids.length} attendee${ids.length > 1 ? "s" : ""} deleted`);
+  }
+}
+
 export async function checkInAttendee(id: string) {
   const { error } = await client
     .from("Attendees")

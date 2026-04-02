@@ -36,8 +36,6 @@ export function EventsMenu() {
     }
 
     toast.success("Event deleted");
-
-    // No fetch needed — realtime will update the sidebar
   };
 
   return (
