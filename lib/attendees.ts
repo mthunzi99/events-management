@@ -1,5 +1,6 @@
 import client from "@/api/client";
 import { toast } from "sonner";
+import { printBadge } from "./printer";
 
 type Attendee = {
   id: string;
@@ -18,6 +19,46 @@ export async function markBadgePrinted(id: string) {
     .eq("id", id);
 
   if (error) throw error;
+}
+
+export async function bulkPrintBadges(
+  attendees: {
+    id: string;
+    name: string;
+    organisation: string;
+    role: string;
+    event: string;
+  }[],
+): Promise<void> {
+  let printed = 0;
+
+  for (const attendee of attendees) {
+    try {
+      await printBadge({
+        transport: "spool",
+        destination: "Xprinter XP-370B",
+        id: attendee.id,
+        name: attendee.name,
+        organisation: attendee.organisation,
+        role: attendee.role,
+        event: attendee.event,
+        type: "",
+      });
+
+      await markBadgePrinted(attendee.id);
+      printed++;
+    } catch (err: any) {
+      toast.error(`Failed to print badge for ${attendee.name}`, {
+        description: err.message,
+      });
+    }
+  }
+
+  if (printed > 0) {
+    toast.success(
+      `${printed} badge${printed > 1 ? "s" : ""} printed successfully!`,
+    );
+  }
 }
 
 export async function deleteAttendee(attendee: Attendee) {

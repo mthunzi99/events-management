@@ -1,7 +1,7 @@
 "use client";
 
 import { Table } from "@tanstack/react-table";
-import { Trash2 } from "lucide-react";
+import { Printer, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -15,7 +15,8 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { bulkDeleteAttendees } from "@/lib/attendees";
+import { bulkDeleteAttendees, bulkPrintBadges } from "@/lib/attendees";
+import { toast } from "sonner";
 
 interface AttendeeTableToolbarProps<TData extends { id: string }> {
   table: Table<TData>;
@@ -24,7 +25,8 @@ interface AttendeeTableToolbarProps<TData extends { id: string }> {
 export function AttendeeTableToolbar<TData extends { id: string }>({
   table,
 }: AttendeeTableToolbarProps<TData>) {
-  const [loading, setLoading] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [printing, setPrinting] = useState(false);
 
   const selectedRows = table.getFilteredSelectedRowModel().rows;
   const selectedIds = selectedRows.map((row) => row.original.id);
@@ -33,19 +35,95 @@ export function AttendeeTableToolbar<TData extends { id: string }>({
   if (count === 0) return null;
 
   const handleDelete = async () => {
-    setLoading(true);
+    setDeleting(true);
     await bulkDeleteAttendees(selectedIds);
     table.resetRowSelection();
-    setLoading(false);
+    setDeleting(false);
   };
+
+  const handleBulkPrint = async () => {
+    const attendees = selectedRows.map(
+      (row) =>
+        row.original as TData & {
+          name: string;
+          organisation: string;
+          role: string;
+          event: string;
+        },
+    );
+
+    // Warn if some badges were already printed
+    const alreadyPrinted = attendees.filter(
+      (a) => (a as any).last_printed != null,
+    );
+    if (alreadyPrinted.length > 0 && alreadyPrinted.length < count) {
+      toast.info(
+        `${alreadyPrinted.length} badge${alreadyPrinted.length > 1 ? "s have" : " has"} already been printed and will be reprinted.`,
+      );
+    }
+
+    setPrinting(true);
+    const loading = toast.loading(
+      `Printing ${count} badge${count > 1 ? "s" : ""}...`,
+    );
+    await bulkPrintBadges(attendees);
+    toast.dismiss(loading);
+    table.resetRowSelection();
+    setPrinting(false);
+  };
+
+  const isLoading = deleting || printing;
+  const allPrinted = selectedRows.every(
+    (row) => (row.original as any).last_printed != null,
+  );
 
   return (
     <div className="flex items-center gap-3 px-1">
+      {/* Bulk Print */}
       <AlertDialog>
         <AlertDialogTrigger asChild>
-          <Button variant="destructive" size="sm" disabled={loading}>
-            <Trash2 className="h-4 w-4 mr-2" />
-            {count}
+          <Button
+            variant="outline"
+            size="lg"
+            disabled={isLoading}
+            className="cursor-pointer"
+          >
+            <Printer />
+            {allPrinted ? "Reprint" : "Print"} {count} badge
+            {count > 1 ? "s" : ""}
+          </Button>
+        </AlertDialogTrigger>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {allPrinted ? "Reprint" : "Print"} {count} badge
+              {count > 1 ? "s" : ""}?
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {allPrinted
+                ? `All ${count} selected badge${count > 1 ? "s have" : " has"} already been printed. Are you sure you want to reprint ${count > 1 ? "them" : "it"}?`
+                : `This will send ${count} badge${count > 1 ? "s" : ""} to the printer. Badges that have already been printed will be reprinted.`}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isLoading}>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleBulkPrint} disabled={isLoading}>
+              {printing ? "Printing..." : "Print"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Bulk Delete */}
+      <AlertDialog>
+        <AlertDialogTrigger asChild>
+          <Button
+            variant="destructive"
+            size="lg"
+            disabled={isLoading}
+            className="cursor-pointer"
+          >
+            <Trash2 />
           </Button>
         </AlertDialogTrigger>
         <AlertDialogContent>
@@ -60,13 +138,13 @@ export function AttendeeTableToolbar<TData extends { id: string }>({
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={loading}>Cancel</AlertDialogCancel>
+            <AlertDialogCancel disabled={isLoading}>Cancel</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDelete}
-              disabled={loading}
+              disabled={isLoading}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              {loading ? "Deleting..." : "Delete"}
+              {deleting ? "Deleting..." : "Delete"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
