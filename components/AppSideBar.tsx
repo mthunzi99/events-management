@@ -1,6 +1,6 @@
 "use client";
 
-import { Calendar, LayoutDashboard, TicketIcon, Users } from "lucide-react";
+import { Building2, Calendar, LayoutDashboard, TicketIcon } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -19,7 +19,7 @@ import EventsMenu from "./EventsMenu";
 
 const items = [
   { title: "Dashboard", icon: LayoutDashboard, url: "/" },
-  { title: "List", icon: Users, url: "/list" },
+  { title: "Support Staff", icon: Building2, url: "/support-staff" },
   { title: "Events", icon: Calendar, url: "/events" },
 ];
 

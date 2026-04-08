@@ -5,7 +5,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "./ui/sidebar";
-import { Calendar, Trash } from "lucide-react";
+import { Ticket, Trash } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -46,7 +46,7 @@ export function EventsMenu() {
             isActive={activeEvent?.event === event.event}
             onClick={() => setActiveEvent(event)}
           >
-            <Calendar className="h-4 w-4" />
+            <Ticket className="h-4 w-4" />
             <span>{event.event}</span>
           </SidebarMenuButton>
 
