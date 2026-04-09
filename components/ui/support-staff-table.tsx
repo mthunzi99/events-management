@@ -24,6 +24,7 @@ import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import ImportAttendees from "../attendees/ImportAttedees";
 import { AttendeeTableToolbar } from "../AttendeeTableToolBar";
+import AddSupportGroup from "../AddSupportGroup";
 
 interface DataTableProps<TData extends { id: string }, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -89,6 +90,7 @@ export function SupportStaffTable<TData extends { id: string }, TValue>({
         </span>
         <div className="flex justify-end gap-4">
           <AttendeeTableToolbar table={table} />
+          <AddSupportGroup />
           <ImportAttendees />
         </div>
       </div>
