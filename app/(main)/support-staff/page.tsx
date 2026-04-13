@@ -17,11 +17,10 @@ export default function SupportStaff() {
       setOrganisations([]);
       return;
     }
-    console.log(activeEvent.event);
 
     const fetchOrganisations = async () => {
       const { data, error } = await client
-        .from("organisations")
+        .from("SupportGroups")
         .select("*")
         .eq("event", activeEvent.event)
         .order("created_at", { ascending: false });
