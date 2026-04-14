@@ -1,6 +1,12 @@
 "use client";
 
-import { Building2, Calendar, LayoutDashboard, TicketIcon } from "lucide-react";
+import {
+  Building2,
+  Calendar,
+  LayoutDashboard,
+  Shirt,
+  TicketIcon,
+} from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -21,6 +27,7 @@ const items = [
   { title: "Dashboard", icon: LayoutDashboard, url: "/" },
   { title: "Support Staff", icon: Building2, url: "/support-staff" },
   { title: "Events", icon: Calendar, url: "/events" },
+  { title: "Complements", icon: Shirt, url: "/complements" },
 ];
 
 const AppSideBar = () => {

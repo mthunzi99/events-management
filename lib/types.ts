@@ -14,5 +14,6 @@ export type SupportStaff = {
   role: string;
   event: string;
   total_coupons: number;
+  remaining_coupons?: number;
   created_at?: string;
 };
