@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
+import { useMemo } from "react";
 import { DataTable } from "@/components/ui/data-table";
 import { complementColumns, Complement } from "@/app/complements-columns";
+import { createAttendeeCollectionsColumns } from "@/app/attendeeCollectionsColumns";
+import { useComplements } from "@/hooks/fetch-complements";
+import { useAttendeeCollections } from "@/hooks/useAttendeeCollections";
 import { useEvent } from "@/components/context/EventProvider";
-import client from "@/api/client";
-import { toast } from "sonner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -22,8 +23,9 @@ import {
 import { Controller, useForm } from "react-hook-form";
 import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { toast } from "sonner";
+import client from "@/api/client";
 import { Package, PackageCheck, PackageX, Percent } from "lucide-react";
-import { useComplements } from "@/hooks/fetch-complements";
 
 // ── Add Complement Dialog ─────────────────────────────────────────────────────
 
@@ -174,7 +176,7 @@ function SummaryCards({ complements }: { complements: Complement[] }) {
           </CardTitle>
           <Package className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
-        <CardContent className="mx-auto text-center">
+        <CardContent>
           <p className="text-3xl font-bold">{totalTypes}</p>
           <p className="text-xs text-muted-foreground mt-1">
             defined for this event
@@ -185,13 +187,13 @@ function SummaryCards({ complements }: { complements: Complement[] }) {
       {/* Total Collected — liquid fill rising from bottom */}
       <Card className="relative overflow-hidden">
         <div
-          className="bg-chart-15 absolute bottom-0 left-0 w-full transition-all duration-1000 ease-in-out"
+          className="bg-chart-1/15 absolute bottom-0 left-0 w-full transition-all duration-1000 ease-in-out"
           style={{
             height: `${collectionRate}%`,
           }}
         >
           {/* Wave line at the top of the fill */}
-          <div className="bg-chart-1/50 absolute top-0 left-0 w-full h-0.5" />
+          <div className="bg-chart-1/50 h-0.5 absolute top-0 left-0 w-full" />
         </div>
         <CardHeader className="relative flex flex-row items-center justify-between pb-2">
           <CardTitle className="text-sm font-medium text-muted-foreground">
@@ -199,7 +201,7 @@ function SummaryCards({ complements }: { complements: Complement[] }) {
           </CardTitle>
           <PackageCheck className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
-        <CardContent className="relative mg-auto text-center">
+        <CardContent className="relative">
           <p className="text-3xl font-bold">{totalCollected}</p>
           <p className="text-xs text-muted-foreground mt-1">
             {collectionRate}% of {totalAvailable} available
@@ -210,12 +212,12 @@ function SummaryCards({ complements }: { complements: Complement[] }) {
       {/* Remaining — liquid draining from top */}
       <Card className="relative overflow-hidden">
         <div
-          className="absolute bottom-0 left-0 w-full transition-all duration-1000 ease-in-out bg-chart-2/20"
+          className="bg-chart-2/15 absolute bottom-0 left-0 w-full transition-all duration-1000 ease-in-out"
           style={{
             height: `${remainingRate}%`,
           }}
         >
-          <div className="bg-chart-2/50 absolute top-0 left-0 w-full h-0.5" />
+          <div className="bg-chart-2/50 h-0.5 absolute top-0 left-0 w-full" />
         </div>
         <CardHeader className="relative flex flex-row items-center justify-between pb-2">
           <CardTitle className="text-sm font-medium text-muted-foreground">
@@ -223,7 +225,7 @@ function SummaryCards({ complements }: { complements: Complement[] }) {
           </CardTitle>
           <PackageX className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
-        <CardContent className="relative mg-auto text-center">
+        <CardContent className="relative">
           <p className="text-3xl font-bold">{totalRemaining}</p>
           <p className="text-xs text-muted-foreground mt-1">
             {remainingRate}% yet to be collected
@@ -239,7 +241,7 @@ function SummaryCards({ complements }: { complements: Complement[] }) {
           </CardTitle>
           <Percent className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
-        <CardContent className="mx-auto text-center">
+        <CardContent>
           <p className="text-3xl font-bold">{collectionRate}%</p>
           <p className="text-xs text-muted-foreground mt-1">
             of all complements claimed
@@ -254,7 +256,17 @@ function SummaryCards({ complements }: { complements: Complement[] }) {
 
 export default function ComplementsPage() {
   const { activeEvent } = useEvent();
-  const { complements, loading } = useComplements();
+  const { complements, loading: complementsLoading } = useComplements();
+  const {
+    attendees,
+    complementOptions,
+    loading: attendeesLoading,
+  } = useAttendeeCollections();
+
+  const attendeeColumns = useMemo(
+    () => createAttendeeCollectionsColumns(complementOptions),
+    [complementOptions],
+  );
 
   if (!activeEvent) {
     return (
@@ -265,7 +277,8 @@ export default function ComplementsPage() {
   }
 
   return (
-    <div className="space-y-6 p-6">
+    <div className="space-y-8 p-6">
+      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">Complements</h1>
@@ -276,15 +289,42 @@ export default function ComplementsPage() {
         <AddComplementDialog event={activeEvent.event} />
       </div>
 
+      {/* Summary Cards */}
       <SummaryCards complements={complements} />
 
-      {loading ? (
-        <div className="flex h-48 items-center justify-center text-muted-foreground text-sm">
-          Loading complements...
+      {/* Complements Table */}
+      <div className="space-y-3">
+        <div>
+          <h2 className="text-lg font-semibold">Complement Types</h2>
+          <p className="text-sm text-muted-foreground">
+            All complements configured for this event
+          </p>
         </div>
-      ) : (
-        <DataTable columns={complementColumns} data={complements} />
-      )}
+        {complementsLoading ? (
+          <div className="flex h-48 items-center justify-center text-muted-foreground text-sm">
+            Loading complements...
+          </div>
+        ) : (
+          <DataTable columns={complementColumns} data={complements} />
+        )}
+      </div>
+
+      {/* Attendee Collections Table */}
+      <div className="space-y-3">
+        <div>
+          <h2 className="text-lg font-semibold">Attendee Collections</h2>
+          <p className="text-sm text-muted-foreground">
+            Track which complements each attendee has collected
+          </p>
+        </div>
+        {attendeesLoading ? (
+          <div className="flex h-48 items-center justify-center text-muted-foreground text-sm">
+            Loading attendees...
+          </div>
+        ) : (
+          <DataTable columns={attendeeColumns} data={attendees} />
+        )}
+      </div>
     </div>
   );
 }
