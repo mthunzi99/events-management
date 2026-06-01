@@ -19,14 +19,6 @@ const NavBar = () => {
     <nav className="p-4 flex items-center justify-between bg-background z-10">
       <SidebarTrigger />
       <div className="flex items-center gap-4">
-        <Button
-          variant="ghost"
-          onClick={() => {
-            client.auth.signOut();
-          }}
-        >
-          <LogOut className="h-[1.2rem] w-[1.2rem]" />
-        </Button>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
@@ -51,6 +43,14 @@ const NavBar = () => {
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
+        <Button
+          variant="ghost"
+          onClick={() => {
+            client.auth.signOut();
+          }}
+        >
+          <LogOut className="h-[1.2rem] w-[1.2rem]" />
+        </Button>
       </div>
     </nav>
   );

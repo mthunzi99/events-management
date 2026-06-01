@@ -14,7 +14,7 @@ const PrivatePagesLayout = ({
   defaultOpen,
 }: {
   children: React.ReactNode;
-  defaultOpen: boolean;
+  defaultOpen?: boolean;
 }) => {
   const { user, loading } = useAuth();
   const router = useRouter();

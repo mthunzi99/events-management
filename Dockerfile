@@ -9,6 +9,9 @@ FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
+# Overwrite the Windows node_modules that came in via COPY . .
+# with the Linux ones from the deps stage
+COPY --from=deps /app/node_modules ./node_modules
 RUN npm install -g pnpm && pnpm build
 
 FROM base AS runner

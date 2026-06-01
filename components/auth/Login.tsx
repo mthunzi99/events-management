@@ -55,13 +55,6 @@ export function Login() {
       toast.error(`Login failed: ${error.message}`);
       return;
     }
-    toast.success("You submitted the following values:", {
-      description: (
-        <pre>
-          <code>{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
-    });
   }
 
   return (

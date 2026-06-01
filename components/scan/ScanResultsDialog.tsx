@@ -34,7 +34,7 @@ export default function ScanResultDialog() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (!scannedAttendee.id) return;
+    if (!scannedAttendee || !scannedAttendee.id) return;
 
     toast.success("Attendee scanned!", {
       description: scannedAttendee.id,
@@ -57,7 +57,7 @@ export default function ScanResultDialog() {
     };
 
     fetchAttendee();
-  }, [scannedAttendee.id]);
+  }, [scannedAttendee?.id]);
 
   const updateField = (field: keyof Attendee, value: string) => {
     if (!attendee) return;
@@ -103,7 +103,7 @@ export default function ScanResultDialog() {
     if (!attendee) return;
 
     try {
-      await printMealCoupon(attendee.id);
+      await printMealCoupon(attendee);
       toast.success("Meal coupon sent to printer");
     } catch (err) {
       toast.error("Meal coupon printing failed");
