@@ -60,3 +60,17 @@ export async function printMealCoupon(data: PrintMealCouponPayload) {
     throw err;
   }
 }
+
+export async function detectPrinters(): Promise<string[]> {
+  try {
+    const res = await fetch(`${BASE_URL}/detect/printers`);
+    if (!res.ok) {
+      const text = await res.text();
+      throw new Error(text || "Printer API error");
+    }
+    return await res.json();
+  } catch (err) {
+    console.error("Error fetching printers:", err);
+    throw err;
+  }
+}

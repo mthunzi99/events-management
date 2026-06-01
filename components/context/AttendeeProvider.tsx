@@ -20,6 +20,8 @@ export type People = {
 type AttendeeContextType = {
   attendees: People[];
   setAttendees: React.Dispatch<React.SetStateAction<People[]>>;
+  printer: string;
+  setPrinter: (printerName: string) => void;
 };
 
 const AttendeeContext = createContext<AttendeeContextType | null>(null);
@@ -27,6 +29,11 @@ const AttendeeContext = createContext<AttendeeContextType | null>(null);
 export function AttendeeProvider({ children }: { children: React.ReactNode }) {
   const [attendees, setAttendees] = useState<People[]>([]);
   const { activeEvent } = useEvent();
+  const [printer, setPrinter] = useState<string>("");
+
+  const usePrinter = (printerName: string) => {
+    setPrinter(printerName);
+  };
 
   // Initial fetch
   useEffect(() => {
@@ -94,7 +101,9 @@ export function AttendeeProvider({ children }: { children: React.ReactNode }) {
   }, [activeEvent]);
 
   return (
-    <AttendeeContext.Provider value={{ attendees, setAttendees }}>
+    <AttendeeContext.Provider
+      value={{ attendees, setAttendees, setPrinter, printer }}
+    >
       {children}
     </AttendeeContext.Provider>
   );

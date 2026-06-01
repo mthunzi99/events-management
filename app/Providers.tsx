@@ -8,6 +8,7 @@ import NavBar from "@/components/NavBar";
 import AppSideBar from "@/components/AppSideBar";
 import { EventProvider } from "@/components/context/EventProvider";
 import { ScannerProvider } from "@/components/context/ScannerProvider";
+import { AttendeeProvider } from "@/components/context/AttendeeProvider";
 
 export default function Providers({
   children,
@@ -25,20 +26,22 @@ export default function Providers({
       enableSystem
       disableTransitionOnChange
     >
-      <EventProvider>
-        <SidebarProvider defaultOpen={defaultOpen}>
-          <ScannerProvider>
-            {user && <AppSideBar />}
-            <div className="flex-1">
-              <main className="w-full">
-                {user && <NavBar />}
-                <Toaster position="bottom-right" />
-                <div className="px-4">{children}</div>
-              </main>
-            </div>
-          </ScannerProvider>
-        </SidebarProvider>
-      </EventProvider>
+      <SidebarProvider defaultOpen={defaultOpen}>
+        <EventProvider>
+          <AttendeeProvider>
+            <ScannerProvider>
+              {user && <AppSideBar />}
+              <div className="flex-1">
+                <main className="w-full">
+                  {user && <NavBar />}
+                  <Toaster position="bottom-right" />
+                  <div className="px-4">{children}</div>
+                </main>
+              </div>
+            </ScannerProvider>
+          </AttendeeProvider>
+        </EventProvider>
+      </SidebarProvider>
     </ThemeProvider>
   );
 }

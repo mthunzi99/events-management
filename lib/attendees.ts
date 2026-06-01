@@ -1,6 +1,7 @@
 import client from "@/api/client";
 import { toast } from "sonner";
 import { printBadge } from "./printer";
+import { useAttendees } from "@/components/context/AttendeeProvider";
 
 type Attendee = {
   id: string;
@@ -32,11 +33,13 @@ export async function bulkPrintBadges(
 ): Promise<void> {
   let printed = 0;
 
+  const printer = useAttendees().printer;
+
   for (const attendee of attendees) {
     try {
       await printBadge({
         transport: "spool",
-        destination: "Xprinter XP-370B",
+        destination: printer,
         id: attendee.id,
         name: attendee.name,
         organisation: attendee.organisation,

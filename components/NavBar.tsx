@@ -11,13 +11,17 @@ import { useTheme } from "next-themes";
 import { SidebarTrigger } from "./ui/sidebar";
 import { LogOut, Moon, Sun } from "lucide-react";
 import client from "@/api/client";
+import Printers from "./Printers";
 
 const NavBar = () => {
   const { theme, setTheme } = useTheme();
 
   return (
     <nav className="p-4 flex items-center justify-between bg-background z-10">
-      <SidebarTrigger />
+      <div className="flex items-center gap-4">
+        <SidebarTrigger />
+        <Printers />
+      </div>
       <div className="flex items-center gap-4">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

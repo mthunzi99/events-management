@@ -31,10 +31,8 @@ const PrivatePagesLayout = ({
 
   return (
     <>
-      <AttendeeProvider>
-        {children}
-        <ViewAttendee />
-      </AttendeeProvider>
+      {children}
+      <ViewAttendee />
     </>
   );
 };

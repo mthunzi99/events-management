@@ -27,6 +27,7 @@ import {
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import client from "@/api/client";
 import { useEvent } from "./context/EventProvider";
+import ExportPrintsButton from "./ExportPrintsButton";
 
 type PrintRecord = {
   created_at: string;
@@ -156,17 +157,19 @@ export function PrintsChart() {
               : `${records.length} print${records.length !== 1 ? "s" : ""} recorded`}
           </CardDescription>
         </div>
-
-        <Select value={view} onValueChange={setView}>
-          <SelectTrigger className="w-35 rounded-lg sm:ml-auto">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="hour">Hourly</SelectItem>
-            <SelectItem value="day">Daily</SelectItem>
-            <SelectItem value="week">Weekly</SelectItem>
-          </SelectContent>
-        </Select>
+        <div className="flex items-center gap-2">
+          <ExportPrintsButton />
+          <Select value={view} onValueChange={setView}>
+            <SelectTrigger className="w-35 rounded-lg sm:ml-auto">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="hour">Hourly</SelectItem>
+              <SelectItem value="day">Daily</SelectItem>
+              <SelectItem value="week">Weekly</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       </CardHeader>
 
       <ScrollArea className="w-full whitespace-nowrap">
