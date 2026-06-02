@@ -5,7 +5,7 @@ import { printBadge } from "@/lib/printer";
 import { markBadgePrinted } from "@/lib/attendees";
 import { toast } from "sonner";
 
-function PrintButton({ person }: { person: People }) {
+function PrintBadgeButton({ person }: { person: People }) {
   const { activeEvent } = useEvent();
 
   const handlePrint = async () => {
@@ -42,4 +42,4 @@ function PrintButton({ person }: { person: People }) {
   );
 }
 
-export default PrintButton;
+export default PrintBadgeButton;

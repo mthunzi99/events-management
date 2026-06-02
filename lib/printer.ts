@@ -1,4 +1,4 @@
-export type PrintBadgePayload = {
+export type PrinterPayload = {
   transport: string;
   destination: string;
   id: string;
@@ -11,11 +11,7 @@ export type PrintBadgePayload = {
 
 const BASE_URL = process.env.NEXT_PUBLIC_PRINTER_SERVER_URL;
 
-export type PrintMealCouponPayload = {
-  id: string;
-};
-
-export async function printBadge(data: PrintBadgePayload) {
+export async function printBadge(data: PrinterPayload) {
   try {
     console.log("Printing badge with data:", data);
     console.log("Base URL:", BASE_URL);
@@ -29,6 +25,7 @@ export async function printBadge(data: PrintBadgePayload) {
 
     if (!res.ok) {
       const text = await res.text();
+      console.log("Printer API error response:", text);
       throw new Error(text || "Printer API error");
     }
 
@@ -39,7 +36,7 @@ export async function printBadge(data: PrintBadgePayload) {
   }
 }
 
-export async function printMealCoupon(data: PrintMealCouponPayload) {
+export async function printMealCoupon(data: PrinterPayload) {
   try {
     const res = await fetch(`${BASE_URL}/print/meal-coupon`, {
       method: "POST",
@@ -50,8 +47,9 @@ export async function printMealCoupon(data: PrintMealCouponPayload) {
     });
 
     if (!res.ok) {
-      const text = await res.text();
-      throw new Error(text || "Printer API error");
+      const error = await res.json();
+      console.error("Printer API error:", error);
+      throw new Error(JSON.stringify(error));
     }
 
     return await res.json();

@@ -15,9 +15,7 @@ import { Input } from "./ui/input";
 import { useEffect, useState } from "react";
 import client from "@/api/client";
 import { toast } from "sonner";
-import { printMealCoupon } from "@/lib/printer";
 import { checkInAttendee } from "@/lib/attendees";
-import PrintButton from "./PrintBadgeButton";
 import { People } from "./context/AttendeeProvider";
 import { Controller, useForm } from "react-hook-form";
 import z from "zod";
@@ -32,6 +30,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
+import PrintBadgeButton from "./PrintBadgeButton";
+import PrintMealButton from "./PrintMealButton";
 
 const attendeeSchema = z
   .object({
@@ -83,17 +83,6 @@ export function ViewAttendee() {
 
     fetchAttendee();
   }, [scannedAttendee]);
-
-  const handlePrintMeal = async () => {
-    if (!attendee) return;
-
-    try {
-      await printMealCoupon(attendee);
-      toast.success("Meal coupon sent to printer");
-    } catch (err) {
-      toast.error("Meal coupon printing failed");
-    }
-  };
 
   const handleCheckIn = async () => {
     if (!attendee) return;
@@ -261,7 +250,7 @@ export function ViewAttendee() {
                         type="number"
                         min={0}
                         step={1}
-                        defaultValue={attendee.total_meals || 0}
+                        defaultValue={attendee.total_meals}
                         placeholder="Enter total meals"
                       />
                       {fieldState.error && (
@@ -281,7 +270,7 @@ export function ViewAttendee() {
                         type="number"
                         min={0}
                         step={1}
-                        defaultValue={attendee.redeemed_meals || 0}
+                        defaultValue={attendee.redeemed_meals}
                         {...field}
                         placeholder="Enter redeemed meals"
                       />
@@ -302,12 +291,10 @@ export function ViewAttendee() {
             </Button>
 
             {/* Print badge */}
-            {attendee && <PrintButton person={attendee} />}
+            {attendee && <PrintBadgeButton person={attendee} />}
 
             {/* Print meal */}
-            <Button variant="outline" onClick={handlePrintMeal}>
-              Print Meal Coupon
-            </Button>
+            {attendee && <PrintMealButton person={attendee} />}
 
             {/* Check-in */}
             <Button variant="outline" onClick={handleCheckIn}>
